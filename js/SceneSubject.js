@@ -4,8 +4,6 @@ function Cards(scene, eventControl, text) {
     let opponentCards = [];
     let gameEnded = false;
 
-    scene.add(new THREE.AxesHelper(20));
-
     let context = {};
     for (let i = 0; i < 6; i++) {
         const card = MyCard(scene, i, context);

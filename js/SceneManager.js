@@ -8,18 +8,18 @@ function SceneManager(text) {
     const eventControl = new THREE.EventsControls(camera, renderer.domElement);
     const sceneSubjects = createSceneSubjects(scene);
     const cameraControl = buildControl(camera);
+    window.addEventListener('resize', onWindowResize, false);
 
     function buildControl(camera) {
-        const eventControl = new THREE.OrbitControls(camera);
-        eventControl.target.set(30, 10, -20);
-        camera.position.set(30, 70, -25);
-        console.log(camera);
-        eventControl.update();
-        eventControl.minPolarAngle = Math.PI / 3;
-        eventControl.maxPolarAngle = Math.PI / 3;
-        eventControl.maxDistance = 40;
-        eventControl.update();
-        return eventControl;
+        const cameraControl = new THREE.OrbitControls(camera);
+        cameraControl.target.set(30, 20, -5);
+        camera.position.set(30, 50, -10);
+        cameraControl.update();
+        cameraControl.minPolarAngle = Math.PI / 3;
+        cameraControl.maxPolarAngle = Math.PI / 3;
+        cameraControl.maxDistance = 40;
+        cameraControl.update();
+        return cameraControl;
     }
 
     function buildScene() {
@@ -29,17 +29,16 @@ function SceneManager(text) {
     }
 
     function buildRender() {
-        const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
-        renderer.setSize(window.innerWidth, window.innerWidth);
+        const renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.gammaInput = true;
         renderer.gammaOutput = true;
         document.body.appendChild(renderer.domElement);
-        renderer.domElement.id = "context";
         return renderer;
     }
 
     function buildCamera() {
-        const aspectRatio = 400 / 300;
+        const aspectRatio = window.innerWidth / window.innerHeight;
         const fieldOfView = 60;
         const nearPlane = 1;
         const farPlane = 10000;
@@ -52,6 +51,12 @@ function SceneManager(text) {
             new Ground(scene),
             new Cards(scene, eventControl, text)
         ];
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.updateProjectionMatrix();
     }
 
     this.update = function () {

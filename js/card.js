@@ -37,11 +37,11 @@ function MyCard(scene, index, context) {
 
     (function Create(scene, i) {
         cube = new THREE.Mesh(
-            new THREE.BoxGeometry(8, 10, 2),
+            new THREE.BoxGeometry(8, 12, 2),
             new THREE.MeshBasicMaterial());
         cube.castShadow = true;
         cube.receiveShadow = true;
-        cube.position.y = 5;
+        cube.position.y = 6;
         cube.position.z = 1;
         cube.name = "My Card " + i;
         context[cube.name] = stateEnum.initial;
@@ -96,9 +96,9 @@ function OpponentCard(scene, index, context) {
 
     (function Create(scene, i) {
         cube = new THREE.Mesh(
-            new THREE.BoxGeometry(8, 10, 2),
+            new THREE.BoxGeometry(8, 12, 2),
             new THREE.MeshBasicMaterial());
-        cube.position.y = 5;
+        cube.position.y = 6;
         cube.position.z = -1;
         cube.name = "Opponent Card " + i;
         context[cube.name] = stateEnum.initial;
@@ -111,7 +111,7 @@ function OpponentCard(scene, index, context) {
         });
         type = cube.material[4].map.name;
         dummy = new THREE.Object3D();
-        dummy.position.set(5 + 10 * i, 0, 50);
+        dummy.position.set(5 + 10 * i, 0, 55);
         dummy.add(cube);
         scene.add(dummy);
     })(scene, index);
