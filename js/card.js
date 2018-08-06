@@ -39,17 +39,19 @@ function MyCard(scene, index, context) {
         cube = new THREE.Mesh(
             new THREE.BoxGeometry(8, 10, 2),
             new THREE.MeshBasicMaterial());
+        cube.castShadow = true;
+        cube.receiveShadow = true;
         cube.position.y = 5;
         cube.position.z = 1;
         cube.name = "My Card " + i;
         context[cube.name] = stateEnum.initial;
         cube.material = Array(5).fill(
-            new THREE.MeshBasicMaterial({
+            new THREE.MeshLambertMaterial({
                 color: 'green'
+            })).concat(
+            new THREE.MeshLambertMaterial({
+                map: textureManager.getTextureForOpponentCard(), // back
             }));
-        cube.material.push(new THREE.MeshBasicMaterial({
-            map: textureManager.getTextureForOpponentCard() // back
-        }));
         type = cube.material[5].map.name;
         dummy = new THREE.Object3D();
         dummy.position.set(5 + 10 * i, 0, -1);
@@ -59,7 +61,6 @@ function MyCard(scene, index, context) {
     (scene, index);
 
     return {
-        dummy: dummy,
         cube: cube,
         isFinal: function () {
             return context[cube.name] === stateEnum.final;
@@ -93,10 +94,6 @@ function OpponentCard(scene, index, context) {
     let cube = null;
     let type;
 
-    this.isFinal = function () {
-        return context[cube.name] === stateEnum.final;
-    };
-
     (function Create(scene, i) {
         cube = new THREE.Mesh(
             new THREE.BoxGeometry(8, 10, 2),
@@ -106,10 +103,10 @@ function OpponentCard(scene, index, context) {
         cube.name = "Opponent Card " + i;
         context[cube.name] = stateEnum.initial;
         cube.material = Array(6).fill(
-            new THREE.MeshBasicMaterial({
+            new THREE.MeshLambertMaterial({
                 color: 'red'
             }));
-        cube.material[4] = new THREE.MeshBasicMaterial({
+        cube.material[4] = new THREE.MeshLambertMaterial({
             map: textureManager.getTextureForMyCard() // front
         });
         type = cube.material[4].map.name;
@@ -119,27 +116,32 @@ function OpponentCard(scene, index, context) {
         scene.add(dummy);
     })(scene, index);
 
-    this.move = function (callback) {
-        // Move opponent card only when my card is moving.
-        if (context[cube.name] === stateEnum.initial &&
-            Object.values(context).includes(stateEnum.moving) &&
-            !Object.values(context).includes(stateEnum.following)) {
-            context[cube.name] = stateEnum.following;
-            new TWEEN.Tween(dummy.rotation)
-                .to({x: Math.PI / 2}, 500)
-                .easing(TWEEN.Easing.Quadratic.In)
-                .chain(new TWEEN.Tween(cube.position)
-                    .to({y: -20}, 2000)
-                    .chain(new TWEEN.Tween(cube.rotation)
-                        .to({y: Math.PI})
-                        .onComplete(function () {
-                            context[cube.name] = stateEnum.final;
-                            callback(type);
-                        }))
-                )
-                .start();
-            return true;    // move is executed.
+    return {
+        isFinal: function () {
+            return context[cube.name] === stateEnum.final;
+        },
+        move: function (callback) {
+            // Move opponent card only when my card is moving.
+            if (context[cube.name] === stateEnum.initial &&
+                Object.values(context).includes(stateEnum.moving) &&
+                !Object.values(context).includes(stateEnum.following)) {
+                context[cube.name] = stateEnum.following;
+                new TWEEN.Tween(dummy.rotation)
+                    .to({x: Math.PI / 2}, 500)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .chain(new TWEEN.Tween(cube.position)
+                        .to({y: -20}, 2000)
+                        .chain(new TWEEN.Tween(cube.rotation)
+                            .to({y: Math.PI})
+                            .onComplete(function () {
+                                context[cube.name] = stateEnum.final;
+                                callback(type);
+                            }))
+                    )
+                    .start();
+                return true;    // move is executed.
+            }
+            return false;
         }
-        return false;
-    };
+    }
 }

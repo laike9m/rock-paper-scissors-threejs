@@ -10,13 +10,16 @@ function SceneManager(text) {
     const cameraControl = buildControl(camera);
 
     function buildControl(camera) {
-        const control = new THREE.OrbitControls(camera);
-        control.target.set(20, 10, -10);
-        camera.position.set(20, 40, -40);
-        control.update();
-        // control.minPolarAngle = Math.PI / 3;
-        // control.maxPolarAngle = Math.PI / 3;
-        return control;
+        const eventControl = new THREE.OrbitControls(camera);
+        eventControl.target.set(30, 10, -20);
+        camera.position.set(30, 70, -25);
+        console.log(camera);
+        eventControl.update();
+        eventControl.minPolarAngle = Math.PI / 3;
+        eventControl.maxPolarAngle = Math.PI / 3;
+        eventControl.maxDistance = 40;
+        eventControl.update();
+        return eventControl;
     }
 
     function buildScene() {
@@ -45,7 +48,8 @@ function SceneManager(text) {
 
     function createSceneSubjects(scene) {
         return [
-            new GeneralLights(scene),
+            new Lights(scene),
+            new Ground(scene),
             new Cards(scene, eventControl, text)
         ];
     }
@@ -58,7 +62,8 @@ function SceneManager(text) {
         TWEEN.update();
 
         for (let i = 0; i < sceneSubjects.length; i++)
-            sceneSubjects[i].update(elapsedTime);
+            if (sceneSubjects[i].hasOwnProperty('update'))
+                sceneSubjects[i].update(elapsedTime);
 
         renderer.render(scene, camera);
     };

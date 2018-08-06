@@ -58,14 +58,16 @@ function Cards(scene, eventControl, text) {
     }
 }
 
-function GeneralLights(scene) {
+function Ground(scene) {
+    const gridHelper = new THREE.GridHelper(80/*size*/, 16/*divisions*/, 'green', 'green');
+    gridHelper.position.set(30, 0, 25);
+    gridHelper.scale.z = 0.8;
+    scene.add(gridHelper);
+}
 
-    const light = new THREE.PointLight(
-        "#2222ff", 1);
+function Lights(scene) {
+    const light = new THREE.PointLight("#FFFFFF", 5, 100, 2);
+    light.position.set(30, 20, -20);
     scene.add(light);
-
-    this.update = function (time) {
-        light.intensity = (Math.sin(time) + 1.5) / 1.5;
-        light.color.setHSL(Math.sin(time), 0.5, 0.5);
-    }
+    scene.add(new THREE.AmbientLight(0x404040));
 }
