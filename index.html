@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Rock Paper Scissors</title>
+    <style>
+        #gui {
+            position: absolute;
+            top: 2px;
+            left: 2px
+        }
+    </style>
 </head>
 
 <body>
@@ -28,6 +35,7 @@
     gui.add(text, 'Play');
     gui.add(text, 'scoreMe', 0, 6).name("Your score").listen();
     gui.add(text, 'scoreOpponent', 0, 6).name("Opponent score").listen();
+    gui.domElement.id = 'gui';
 
     const sceneManager = new SceneManager(text);
 
