@@ -85,9 +85,9 @@ function Prompt(scene, text) {
     };
 
     const loader = new THREE.FontLoader();
-    loader.load('../fonts/helvetiker_regular.typeface.json', function (font) {
-        ShaderLoader("../shaders/vertex.glsl",
-            "../shaders/fragment.glsl", function (vertex, fragment) {
+    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+        ShaderLoader("shaders/vertex.glsl",
+            "shaders/fragment.glsl", function (vertex, fragment) {
                 let geometry = new THREE.TextBufferGeometry(text, {
                     font: font,
                     size: 5,
