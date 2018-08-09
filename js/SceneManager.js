@@ -1,7 +1,4 @@
 function SceneManager(text) {
-
-    const clock = new THREE.Clock();
-
     const scene = buildScene();
     const renderer = buildRender();
     const camera = buildCamera();
@@ -11,9 +8,8 @@ function SceneManager(text) {
     window.addEventListener('resize', onWindowResize, false);
 
     function buildControl(camera) {
-        const cameraControl = new THREE.OrbitControls(camera);
+        let cameraControl = new THREE.OrbitControls(camera);
         cameraControl.target.set(30, 20, -5);
-        camera.position.set(30, 50, -10);
         cameraControl.update();
         cameraControl.minPolarAngle = Math.PI / 3;
         cameraControl.maxPolarAngle = Math.PI / 3;
@@ -23,13 +19,13 @@ function SceneManager(text) {
     }
 
     function buildScene() {
-        const scene = new THREE.Scene();
+        let scene = new THREE.Scene();
         scene.background = new THREE.Color("#000");
         return scene;
     }
 
     function buildRender() {
-        const renderer = new THREE.WebGLRenderer({antialias: true});
+        let renderer = new THREE.WebGLRenderer({antialias: true});
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.gammaInput = true;
         renderer.gammaOutput = true;
@@ -42,14 +38,16 @@ function SceneManager(text) {
         const fieldOfView = 60;
         const nearPlane = 1;
         const farPlane = 10000;
-        return new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+        let camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+        camera.position.set(30, 50, -10);
+        return camera;
     }
 
     function createSceneSubjects(scene) {
         return [
             new Lights(scene),
             new Ground(scene),
-            new Cards(scene, eventControl, text)
+            new Cards(scene, eventControl, text),
         ];
     }
 
@@ -60,15 +58,13 @@ function SceneManager(text) {
     }
 
     this.update = function () {
-        const elapsedTime = clock.getElapsedTime();
-
         eventControl.update();
         cameraControl.update();
         TWEEN.update();
 
         for (let i = 0; i < sceneSubjects.length; i++)
             if (sceneSubjects[i].hasOwnProperty('update'))
-                sceneSubjects[i].update(elapsedTime);
+                sceneSubjects[i].update();
 
         renderer.render(scene, camera);
     };

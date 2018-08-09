@@ -12,11 +12,31 @@
 <script src="js/libs/Tween.min.js"></script>
 <script type="text/javascript" src="js/libs/dat.gui.min.js"></script>
 
+<script src="js/ShaderLoader.js"></script>
 <script src="js/card.js"></script>
 <script src="js/SceneSubject.js"></script>
 <script src="js/SceneManager.js"></script>
-<script src="js/main.js"></script>
 <script>
+    let GameInfo = function () {
+        this.Play = 'Click on your card.';
+        this.scoreMe = 0;
+        this.scoreOpponent = 0;
+    };
+
+    const text = new GameInfo();
+    let gui = new dat.GUI();
+    gui.add(text, 'Play');
+    gui.add(text, 'scoreMe', 0, 6).name("Your score").listen();
+    gui.add(text, 'scoreOpponent', 0, 6).name("Opponent score").listen();
+
+    const sceneManager = new SceneManager(text);
+
+    animate();
+
+    function animate() {
+        requestAnimationFrame(animate);
+        sceneManager.update();
+    }
 </script>
 </body>
 </html>

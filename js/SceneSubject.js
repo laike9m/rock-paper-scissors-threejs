@@ -2,13 +2,14 @@ function Cards(scene, eventControl, text) {
 
     let myCards = [];
     let opponentCards = [];
-    let gameEnded = false;
+    let cardsLeft = 6;
+    let prompt;
 
-    let context = {};
+    let cardContext = {};
     for (let i = 0; i < 6; i++) {
-        const card = MyCard(scene, i, context);
+        const card = MyCard(scene, i, cardContext);
         myCards.push(card);
-        opponentCards.push(new OpponentCard(scene, i, context));
+        opponentCards.push(new OpponentCard(scene, i, cardContext));
         eventControl.attach(card.cube);
     }
 
@@ -19,6 +20,7 @@ function Cards(scene, eventControl, text) {
             while (!opponentCards[
                 Math.floor(Math.random() * opponentCards.length)]
                 .move(function (typeOpponent) {
+                    cardsLeft--;
                     if (typeMe === typeOpponent) {
                         console.log("DRAW!");
                         return;
@@ -36,28 +38,100 @@ function Cards(scene, eventControl, text) {
         });
     });
 
-    this.update = function (time) {
-        if (!gameEnded && myCards.every(function (card) {
-            return card.isFinal();
-        }) && opponentCards.every(function (card) {
-            return card.isFinal();
-        })) {
-            gameEnded = true;
-            setTimeout(function () {
-                if (text.scoreMe > text.scoreOpponent) {
-                    window.alert("You win! Refresh to restart.");
-                } else if (text.scoreMe === text.scoreOpponent) {
-                    window.alert("It's a draw! Refresh to restart.");
-                } else {
-                    window.alert("You lose! Refresh to restart.");
-                }
-            }, 1000);
+    this.update = function () {
+        if (cardsLeft === 0) {
+            if (text.scoreMe > text.scoreOpponent) {
+                text = "You win! Refresh to restart.";
+            } else if (text.scoreMe === text.scoreOpponent) {
+                text = "It's a draw! Refresh to restart.";
+            } else {
+                text = "You lose! Refresh to restart.";
+            }
+            if (prompt === undefined) {
+                prompt = new Prompt(scene, text);
+            }
+            prompt.update();
         }
     }
 }
 
+function Prompt(scene, text) {
+    let promptText;
+    let textWidth;
+    let uniforms = {
+        min: {
+            type: "f",
+            value: 10
+        },
+        max: {
+            type: "f",
+            value: 20
+        },
+        uDirLightPos: {
+            type: "v3",
+            value: new THREE.Vector3(30, 20, -20)
+        },
+        uDirLightColor: {
+            type: "c",
+            value: new THREE.Color(0xffffff)
+        },
+        "uSpecularColor": {
+            type: "c",
+            value: new THREE.Color(0xffffff)
+        },
+    };
+
+    const loader = new THREE.FontLoader();
+    loader.load('../fonts/helvetiker_regular.typeface.json', function (font) {
+        ShaderLoader("../shaders/vertex.glsl",
+            "../shaders/fragment.glsl", function (vertex, fragment) {
+                let geometry = new THREE.TextBufferGeometry(text, {
+                    font: font,
+                    size: 5,
+                    height: 0.1,
+                });
+                const count = geometry.attributes.position.count;
+                const customColor = new THREE.Float32BufferAttribute(count * 3, 3);
+                geometry.addAttribute('customColor', customColor);
+                const color = new THREE.Color("#42dff4");
+                for (var i = 0, l = customColor.count; i < l; i++) {
+                    color.toArray(customColor.array, i * customColor.itemSize);
+                }
+                geometry.computeBoundingBox();
+                textWidth = geometry.boundingBox.max.x;
+
+                const shaderMaterial = new THREE.ShaderMaterial({
+                    uniforms: uniforms,
+                    vertexShader: vertex,
+                    fragmentShader: fragment
+                });
+                promptText = new THREE.Mesh(
+                    geometry, shaderMaterial
+                );
+                promptText.rotation.y = Math.PI;
+                promptText.position.set(70, 25, 40);
+                scene.add(promptText);
+                console.log("promptText created successfully.");
+            });
+    });
+
+    this.update = function () {
+        const time = Date.now() * 0.001;
+
+        let ratio;
+        for (let i = 0; i < 4; i++) {
+            ratio = Math.tan(Math.PI / 4 * i + time * 0.3);
+            if (0 < ratio && ratio < 1) {
+                break;
+            }
+        }
+        uniforms.min.value = Math.abs(textWidth * ratio);
+        uniforms.max.value = 10 + Math.abs(textWidth * ratio);
+    };
+}
+
 function Ground(scene) {
-    const gridHelper = new THREE.GridHelper(80/*size*/, 16/*divisions*/, 'green', 'green');
+    const gridHelper = new THREE.GridHelper(80/*size*/, 16/*divisions*/, '#42dff4', '#42dff4');
     gridHelper.position.set(30, 0, 25);
     gridHelper.scale.z = 0.8;
     scene.add(gridHelper);
@@ -65,7 +139,7 @@ function Ground(scene) {
 
 function Lights(scene) {
     const light = new THREE.PointLight("#FFFFFF", 5, 100, 2);
-    light.position.set(30, 20, -20);
+    light.position.set(30, 30, -20);
     scene.add(light);
     scene.add(new THREE.AmbientLight(0x404040));
 }
