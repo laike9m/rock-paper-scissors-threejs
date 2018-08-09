@@ -112,7 +112,7 @@ function Prompt(scene, text) {
                     geometry, shaderMaterial
                 );
                 promptText.rotation.y = Math.PI;
-                promptText.position.set(70, 25, 40);
+                promptText.position.set(70, 20, 40);
                 scene.add(promptText);
                 console.log("promptText created successfully.");
             });
