@@ -6,7 +6,7 @@ function Cards(scene, eventControl, text) {
     let prompt;
 
     let cardContext = {};
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < cardsLeft; i++) {
         const card = MyCard(scene, i, cardContext);
         myCards.push(card);
         opponentCards.push(new OpponentCard(scene, i, cardContext));
@@ -34,21 +34,24 @@ function Cards(scene, eventControl, text) {
                         console.log("You lose!");
                         text.scoreOpponent++;
                     }
-                })) ;
+                })) {
+                ;
+            }
         });
     });
 
     this.update = function () {
         if (cardsLeft === 0) {
+            let promptText;
             if (text.scoreMe > text.scoreOpponent) {
-                text = "You win! Refresh to restart.";
+                promptText = "You win! Refresh to restart.";
             } else if (text.scoreMe === text.scoreOpponent) {
-                text = "It's a draw! Refresh to restart.";
+                promptText = "It's a draw! Refresh to restart.";
             } else {
-                text = "You lose! Refresh to restart.";
+                promptText = "You lose! Refresh to restart.";
             }
             if (prompt === undefined) {
-                prompt = new Prompt(scene, text);
+                prompt = new Prompt(scene, promptText);
             }
             prompt.update();
         }
@@ -121,7 +124,7 @@ function Prompt(scene, text) {
         let ratio;
         for (let i = 0; i < 4; i++) {
             ratio = Math.tan(Math.PI / 4 * i + time * 0.3);
-            if (0 < ratio && ratio < 1) {
+            if (ratio > 0 && ratio < 1) {
                 break;
             }
         }

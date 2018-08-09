@@ -24,7 +24,7 @@ const textureManager = (function () {
             return textures[index];
         }
     }
-})();
+}());
 
 const stateEnum = Object.freeze({
     "initial": 1, "front": 2, "moving": 3, "following": 4, "final": 5
@@ -57,8 +57,8 @@ function MyCard(scene, index, context) {
         dummy.position.set(5 + 10 * i, 0, -1);
         dummy.add(cube);
         scene.add(dummy);
-    })
-    (scene, index);
+    }
+    (scene, index));
 
     return {
         cube: cube,
@@ -114,7 +114,7 @@ function OpponentCard(scene, index, context) {
         dummy.position.set(5 + 10 * i, 0, 55);
         dummy.add(cube);
         scene.add(dummy);
-    })(scene, index);
+    }(scene, index));
 
     return {
         isFinal: function () {
@@ -139,7 +139,7 @@ function OpponentCard(scene, index, context) {
                             }))
                     )
                     .start();
-                return true;    // move is executed.
+                return true; // move is executed.
             }
             return false;
         }

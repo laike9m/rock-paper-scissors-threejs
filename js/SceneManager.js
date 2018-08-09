@@ -63,8 +63,8 @@ function SceneManager(text) {
         TWEEN.update();
 
         for (let i = 0; i < sceneSubjects.length; i++)
-            if (sceneSubjects[i].hasOwnProperty('update'))
-                sceneSubjects[i].update();
+            {if (sceneSubjects[i].hasOwnProperty('update'))
+                {sceneSubjects[i].update();}}
 
         renderer.render(scene, camera);
     };
